@@ -122,6 +122,7 @@ app.MapGet("/api/products", (CornerStoreDbContext db, string? search) =>
         });
 });
 
+// Extra Problem
 app.MapGet("/api/products/popular", (CornerStoreDbContext db, int? amount) =>
 {
     return db.Products
