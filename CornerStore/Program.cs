@@ -122,6 +122,28 @@ app.MapGet("/api/products", (CornerStoreDbContext db, string? search) =>
         });
 });
 
+app.MapGet("/api/products/popular", (CornerStoreDbContext db, int? amount) =>
+{
+    return db.Products
+        .Include(p => p.Category)
+        .Include(p => p.OrderProducts)
+        .OrderByDescending(p => p.OrderProducts.Sum(op => op.Quantity))
+        .Take(amount ?? 5)
+        .Select(p => new ProductDTO
+        {
+            Id = p.Id,
+            ProductName = p.ProductName,
+            Price = p.Price,
+            Brand = p.Brand,
+            CategoryId = p.CategoryId,
+            Category = new CategoryDTO
+            {
+                Id = p.Category.Id,
+                CategoryName = p.Category.CategoryName
+            }
+        });
+});
+
 app.MapPost("/api/products", (CornerStoreDbContext db, CreateProductDTO newProductDTO) =>
 {
     Product product = new Product
